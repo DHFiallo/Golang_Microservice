@@ -2,9 +2,11 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/DHFiallo/MagMutual/data"
 	"github.com/gorilla/mux"
@@ -64,35 +66,69 @@ func (u *Users) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 }
 */
 
-func (u *Users) GetUsers(rw http.ResponseWriter, r *http.Request) {
-	u.l.Println("Handle GET User")
-	//lu is list of users
-	lu := data.GetUsers()
-	err := lu.ToJSON(rw)
-	if err != nil {
-		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
-	}
+// Use to get every user with a profession
+func (u *Users) GetJob(rw http.ResponseWriter, r *http.Request) {
+	u.l.Println("GET Request - Profession")
+	vars := mux.Vars(r)
+
+	userList := data.GetProfession(vars["job"])
+
+	//Placeholder
+	fmt.Printf("Profession: %s", userList)
 }
 
-func (u *Users) AddUser(rw http.ResponseWriter, r *http.Request) {
-	u.l.Println("Handle POST User")
+// Use to get everyone between a certain date range
+func (u *Users) GetDateRange(rw http.ResponseWriter, r *http.Request) {
+	u.l.Println("GET Request - Specific Person")
+	vars := mux.Vars(r)
 
-	user := r.Context().Value(KeyUser{}).(data.User)
-	data.AddUser(&user)
+	layout := "2006-01-02" //YYYY-MM-DD
+	date1, err := time.Parse(layout, vars["date1"])
+	if err != nil {
+		u.l.Println(err)
+		http.Error(rw, "Unable to parse first date given", http.StatusBadRequest)
+		return
+	}
+
+	date2, err := time.Parse(layout, vars["date2"])
+	if err != nil {
+		u.l.Println(err)
+		http.Error(rw, "Unable to parse first date given", http.StatusBadRequest)
+		return
+	}
+	userList := data.GetUsersBetweenDates(date1, date2)
+
+	//Placeholder
+	fmt.Printf("People between Dates Given: %s", userList)
+
+}
+
+func (u *Users) GetSpecificPerson(rw http.ResponseWriter, r *http.Request) {
+	u.l.Println("GET Request - Get Specific Person")
+	vars := mux.Vars(r)
+
+	first := vars["first"]
+	last := vars["last"]
+
+	userList := data.GetSpecificPerson(first, last)
+	fmt.Printf("Data of Specific Person: %s", userList)
+
 }
 
 func (u *Users) UpdateUsers(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
+	u.l.Println("PUT Request - Change Person with ID %d", id)
+
 	if err != nil {
 		http.Error(rw, "Unable to convert id", http.StatusBadRequest)
 		return
 	}
 
-	u.l.Println("Handle PUT User", id)
 	user := r.Context().Value(KeyUser{}).(data.User)
 
-	err = data.UpdateUser(id, &user)
+	user.UpdateUser(id)
+
 	if err == data.ErrUserNotFound {
 		http.Error(rw, "User not found", http.StatusNotFound)
 		return

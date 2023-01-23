@@ -13,6 +13,7 @@ import (
 )
 
 var SERVER_ADDRESS = ":9090"
+var DATE_REGEX = `\d{4}-\d{2}-\d{2}`
 
 func main() {
 
@@ -25,17 +26,26 @@ func main() {
 	//sm := http.NewServeMux()
 	sm := mux.NewRouter()
 
+	//Ex: curl localhost:9090/profession/doctor
+	//Will return all doctors
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
-	getRouter.HandleFunc("/", uh.GetUsers)
+	getRouter.HandleFunc("/profession/{job}", uh.GetJob)
 
+	//Ex: curl localhost:9090/date/2018-01-01/2020-01-20
+	//Will return all people who's data was created between 2020-01-20 and 2018-01-01
+	//Put the before date first, then after date. Format is YYYY-MM-DD, can handle YYYY-M-D
+	dateGetRequest := "/date/{date1:" + DATE_REGEX + "}/{date2:" + DATE_REGEX + "}"
+	getRouter.HandleFunc(dateGetRequest, uh.GetDateRange)
+
+	//Ex: curl localhost:9090/name/di/lauraine
+	//Ex: curl localhost:9090/name/rucker/roy
+	getRouter.HandleFunc("/name/{first}/{last}", uh.GetSpecificPerson)
+
+	//Ex: curl -v localhost:9090/105 -X PUT -d "{\"first\":\"rucker\",\"last\":\"roy\",\"email\":\"roy.rucker@gmail.com\",\"profession\":\"engineer\",\"datecreated\":\"2023-01-23\",\"Country\":\"Mexico\",\"City\":\"Cancun\"}"
 	//HandleFunc has regex, looks for id of 0-9 with 1 or more digits
 	putRouter := sm.Methods(http.MethodPut).Subrouter()
 	putRouter.HandleFunc("/{id:[0-9]+}", uh.UpdateUsers)
 	putRouter.Use(uh.MiddlewareUserValidation) //Gets executed before handleFunc in reality
-
-	postRouter := sm.Methods(http.MethodPost).Subrouter()
-	postRouter.HandleFunc("/", uh.AddUser)
-	postRouter.Use(uh.MiddlewareUserValidation) //Gets executed before handleFunc in reality
 
 	//creating a server for further customization, like timing out
 	s := &http.Server{
