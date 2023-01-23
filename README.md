@@ -1,6 +1,8 @@
 # MagMutualTechnical
-#Take home technical project from MagMutual
-#Create a microservice
+Take home technical project from MagMutual
+
+Create a microservice
+
 We would like you to build a Microservice that exposes a couple endpoints to return the
 following information. We would also like a simple UI to display the information.
 
