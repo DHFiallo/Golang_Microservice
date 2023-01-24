@@ -14,6 +14,26 @@ endpoints:
 - Custom Endpoint that you design on your own.
 
 
+cURL Requests
+
+PUT Request for Changing Data based on ID
+curl -v localhost:9090/105 -X PUT -d "{\"first\":\"rucker\",\"last\":\"roy\",\"email\":\"roy.rucker@gmail.com\",\"profession\":\"engineer\",\"datecreated\":\"2023-01-23\",\"Country\":\"Mexico\",\"City\":\"Cancun\"}"
+
+changes ID 105 with these attributes
+
+GET Request for Specific Person
+curl localhost:9090/name/rucker/roy
+
+GET Request for Dates
+curl localhost:9090/date/2018-01-01/2020-01-20
+
+GET Request for Specific Job
+curl localhost:9090/profession/doctor
+
+
+
+
+
 
 Questions:
 
