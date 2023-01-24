@@ -1,5 +1,0 @@
-make a file with each handler/rest api that they want
-put it in this folder called handlers
-main.go will call them with the Handle function
-
-Make a PUT that will update a lastname when given an ID, for marriage

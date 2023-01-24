@@ -1,0 +1,5 @@
+Fix up users.go
+    Separate UI from it, have to research
+Validate dates for PUT request
+    leap years, weird months like February, expect
+Nicer UI/GUI
