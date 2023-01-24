@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -71,15 +70,12 @@ func (u *Users) GetJob(rw http.ResponseWriter, r *http.Request) {
 	u.l.Println("GET Request - Profession")
 	vars := mux.Vars(r)
 
-	userList := data.GetProfession(vars["job"])
-
-	//Placeholder
-	fmt.Printf("Profession: %s", userList)
+	data.GetProfession(vars["job"])
 }
 
 // Use to get everyone between a certain date range
 func (u *Users) GetDateRange(rw http.ResponseWriter, r *http.Request) {
-	u.l.Println("GET Request - Specific Person")
+	u.l.Println("GET Request - People Between Date Range")
 	vars := mux.Vars(r)
 
 	layout := "2006-01-02" //YYYY-MM-DD
@@ -96,11 +92,10 @@ func (u *Users) GetDateRange(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Unable to parse first date given", http.StatusBadRequest)
 		return
 	}
-	userList := data.GetUsersBetweenDates(date1, date2)
 
-	//Placeholder
-	fmt.Printf("People between Dates Given: %s", userList)
+	data.GetUsersBetweenDates(date1, date2)
 
+	//fmt.Printf("People between Dates Given: %v", userList)
 }
 
 func (u *Users) GetSpecificPerson(rw http.ResponseWriter, r *http.Request) {
@@ -110,8 +105,8 @@ func (u *Users) GetSpecificPerson(rw http.ResponseWriter, r *http.Request) {
 	first := vars["first"]
 	last := vars["last"]
 
-	userList := data.GetSpecificPerson(first, last)
-	fmt.Printf("Data of Specific Person: %s", userList)
+	data.GetSpecificPerson(first, last)
+	//fmt.Printf("Data of Specific Person: %s", userList)
 
 }
 
